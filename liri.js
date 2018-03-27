@@ -1,22 +1,28 @@
 require("dotenv").config();
 
 var request = require("request");
-//Add the code required to import the keys.js file and store it in a variable.
-//You should then be able to access your keys information like so:
+var Twitter = require('twitter');
+var Spotify = require('node-spotify-api');
+
+// Grab the fs package to handle read/write
+var fs = require("fs");
+
+// Code required to import the keys.js file and store it in a variable.
+var keys = require("./keys.js");
+    // Test to see if keys.js is exporting to liri.js by running "node .liri.js"
+    // Expected to print "this is loaded"
+    //*** The line below will print actual keys ***
+    // console.log(keys);
+
+// You should then be able to access your keys information like so:
 var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
 
-//
+// Variables for different arguments
 var command = process.argv[2];
+var searchInput = process.argv[3];
 
-
-// Spotify
-// var Spotify = require('node-spotify-api');
-
-// var spotify = new Spotify({
-//     id: <your spotify client id>,
-//     secret: <your spotify client secret>
-// });
+//=======================================================================================
 
 // Different command functions for liri:
 switch (command) {
@@ -29,7 +35,11 @@ switch (command) {
         break;
 
     case "movie-this":
-        movieThis();
+        if(searchInput) {
+            movieThis(searchInput);
+        } else {
+            movieThis('Mr. Nobody');
+        }
         break;
 
     case "do-what-it-says":
@@ -37,8 +47,10 @@ switch (command) {
         break;
 }
 
-//node liri.js my-tweets
-//This will show your last 20 tweets and when they were created at in your terminal/bash window.
+//=======================================================================================
+
+// node liri.js my-tweets
+// This will show your last 20 tweets and when they were created at in your terminal/bash window.
 function myTweets() {
 
     var params = {screen_name: 'nodejs'};
@@ -49,14 +61,14 @@ function myTweets() {
     });
 }
 
-//node liri.js spotify-this-song '<song name here>'
-//This will show the following information about the song in your terminal/bash window
-    //Artist(s)
-    //The song's name
-    //A preview link of the song from Spotify
-    //The album that the song is from
+// node liri.js spotify-this-song '<song name here>'
+// This will show the following information about the song in your terminal/bash window
+    // Artist(s)
+    // The song's name
+    // A preview link of the song from Spotify
+    // The album that the song is from
 
-    //If no song is provided then your program will default to "The Sign" by Ace of Base.
+    // If no song is provided then your program will default to "The Sign" by Ace of Base.
 
 function spotifyThisSong () {
 
@@ -69,21 +81,35 @@ function spotifyThisSong () {
     });
 }
 
-//node liri.js movie-this '<movie name here>'
-//This will output the following information to your terminal/bash window:
-    //Title of the movie.
-    //Year the movie came out.
-    //IMDB Rating of the movie.
-    //Rotten Tomatoes Rating of the movie.
-    //Country where the movie was produced.
-    //Language of the movie.
-    //Plot of the movie.
-    //Actors in the movie.
-
-    //If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
-
+// node liri.js movie-this '<movie name here>'
 function movieThis () {
 
+    // Replace the spaces in user typed title to be replaced with + in url to work correctly.
+    if(searchInput) {
+        searchInput = searchInput.replace(' ', '+');
+    } else {
+        // If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
+        searchInput = "Mr.+Nobody";
+    }
+
+    var omdbUrl = "http://www.omdbapi.com/?t=" + searchInput + "&y=&plot=short&apikey=trilogy";
+
+    // Then run a request to the OMDB API with the movie specified
+    request(omdbUrl, function(error, response, body) {
+        if (!error && response.statusCode === 200) {
+            // Full response for searchInput
+            // console.log(JSON.parse(body));
+
+            console.log('"' + (JSON.parse(body).Title) + '"');
+            console.log("Released in " + (JSON.parse(body).Year));
+            console.log("IMDB " + (JSON.parse(body).Ratings[0].Value));
+            console.log("Rotten Tomatoes " + (JSON.parse(body).Ratings[1].Value));
+            console.log("Produced in " + (JSON.parse(body).Country));
+            console.log("Language: " + (JSON.parse(body).Language));
+            console.log("Plot: " + (JSON.parse(body).Plot));
+            console.log("Actors: " + (JSON.parse(body).Actors));
+        }
+    })
 }
 
 //node liri.js do-what-it-says
