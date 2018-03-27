@@ -55,10 +55,16 @@ switch (command) {
 // This will show your last 20 tweets and when they were created at in your terminal/bash window.
 function myTweets() {
 
-    var params = {screen_name: 'nodejs'};
+    // var params = {screen_name: 'nodejs'};
+    var params = {screen_name: 'mtking78'};
     client.get('statuses/user_timeline', params, function(error, tweets, response) {
         if (!error) {
-        console.log(tweets);
+        //console.log(tweets);
+
+            for (i = 0; i < tweets.length; i++) {
+                console.log(tweets[i].text);
+                console.log(tweets[i].created_at);
+            }
         }
     });
 }
