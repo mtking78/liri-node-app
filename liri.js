@@ -31,7 +31,7 @@ switch (command) {
         break;
 
     case "spotify-this-song":
-        spotifyThisSong();
+        spotifyThisSong(searchInput);
         break;
 
     case "movie-this":
@@ -72,20 +72,46 @@ function myTweets() {
 
 function spotifyThisSong () {
 
-    spotify.search({ type: 'track', query: 'All the Small Things' }, function(err, data) {
-        if (err) {
-            return console.log('Error occurred: ' + err);
-        }
+    // spotify.search({ type: 'track', query: 'All the Small Things' }, function(err, data) {
+    //     if (err) {
+    //         return console.log('Error occurred: ' + err);
+    //     }
 
-        console.log(data);
-    });
+    //     console.log(data);
+    // });
+
+    // spotify
+    //     .search({ type: 'track', query: 'All the Small Things' })
+    //     .then(function(response) {
+    //         console.log(response);
+    //     })
+    //     .catch(function(err) {
+    //         console.log(err);
+    //     });
+
+    //var spotifyURL = "https://api.spotify.com/v1/tracks/" + searchInput;
+
+    spotify
+        .request('https://api.spotify.com/v1/tracks/7yCPwWs66K8Ba5lFuU2bcx')
+        //.request(spotifyURL)
+        .then(function(data) {
+            //console.log(data);
+            console.log("Artist name: " + data.artists[0].name);
+            console.log("Song title: " + data.name);
+            console.log("Preview link at: " + data.external_urls.spotify);
+            console.log("Album title: " + data.album.name);
+        })
+        .catch(function(err) {
+            console.error('Error occurred: ' + err);
+        });
 }
 
 // node liri.js movie-this '<movie name here>'
 function movieThis () {
 
-    // Replace the spaces in user typed title to be replaced with + in url to work correctly.
+    // If the user typed a movie name, the searchInput will be used in the omdbURL.
     if(searchInput) {
+        // Replace the spaces in user typed title to be replaced with + in url to work correctly.
         searchInput = searchInput.replace(' ', '+');
     } else {
         // If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
