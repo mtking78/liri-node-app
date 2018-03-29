@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 var request = require("request");
+var inquirer = require("inquirer");
 var Twitter = require('twitter');
 var Spotify = require('node-spotify-api');
 
@@ -19,49 +20,56 @@ var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
 
 // Variables for different arguments
-var command = process.argv[2];
-var searchInput = process.argv[3];
-
-// Load the NPM Package inquirer
-var inquirer = require("inquirer");
+//var command = process.argv[2];
+//var searchInput = process.argv[3];
 
 //=======================================================================================
 //************ARGUMENT FUNCTION SELECTORS************//
-inquirer.prompt([
+inquirer.prompt(
 
     {
         type: "list",
-        name: "doingWhat",
+        name: "command",
         message: "Choose a command:",
         choices: ["my-tweets", "spotify-this-song", "movie-this", "do-this"]
-      },
-
-    {
-      type: "input",
-      name: "search",
-      message: "What are you looking for?"
     },
 
-  ]).then(function(user) {
+).then(function(user) {
 
-    if (user.doingWhat == "my-tweets") {
+    if (user.command == "my-tweets") {
         myTweets();
 
-    } else if (user.doingWhat == "spotify-this-song") {
-        if (user.search === "") {
-            spotifyThisSong("Sign Ace Base");
-        } else {
-            spotifyThisSong(user.search);
-        }
+    } else if (user.command == "spotify-this-song") {
+        inquirer.prompt(
+            {
+                type: "input",
+                name: "search",
+                message: "What song are you looking for?"
+            },
+        ).then(function(user) {
+            if (user.search === "") {
+                spotifyThisSong("Sign Ace Base");
+            } else {
+                spotifyThisSong(user.search);
+            }
+        })
 
-    } else if (user.doingWhat == "movie-this") {
-        if (user.search === "") {
-            movieThis("Mr. Nobody");
-        } else {
-            movieThis(user.search);
-        }
+    } else if (user.command == "movie-this") {
+        inquirer.prompt(
+            {
+                type: "input",
+                name: "search",
+                message: "What movie are you looking for?"
+            },
+        ).then(function(user){
+            if (user.search === "") {
+                movieThis("Mr. Nobody");
+            } else {
+                movieThis(user.search);
+            }
+        })
 
-    } else if (user.doingWhat == "do-this") {
+    } else if (user.command == "do-this") {
         doThis();
     }
 
@@ -108,10 +116,16 @@ function myTweets() {
     client.get('statuses/user_timeline', params, function(error, tweets, response) {
         if (!error) {
 
+            console.log("");
+            console.log("***** Twitter Tweeter: " + tweets[0].user.screen_name + " *****");
             for (i = 0; i < tweets.length; i++) {
+                console.log("");
                 console.log(tweets[i].text);
                 console.log(tweets[i].created_at.substring(0, 19));
+                console.log("");
             }
+            console.log("**************************************");
+            console.log("");
         } else {
             console.log('An error occurred: ' + error);
         }
@@ -125,10 +139,14 @@ function spotifyThisSong (song) {
         if (!error) {
             var firstReturn = data.tracks.items[0];
 
+            console.log("");
             console.log("Artist name: " + firstReturn.artists[0].name);
             console.log("Song title: " + firstReturn.name);
             console.log("Preview link at: " + firstReturn.external_urls.spotify);
             console.log("Album title: " + firstReturn.album.name);
+            console.log("");
+            console.log("**************************************");
+            console.log("");
         } else {
             return console.log('An error occurred: ' + error);
         }
@@ -144,7 +162,8 @@ function movieThis (movie) {
     request(omdbUrl, function(error, response, body) {
         if (!error && response.statusCode === 200) {
 
-            console.log('"' + (JSON.parse(body).Title) + '"');
+            console.log("");
+            console.log('***** "' + (JSON.parse(body).Title) + '" *****');
             console.log("Released in " + (JSON.parse(body).Year));
             console.log("IMDB " + (JSON.parse(body).Ratings[0].Value));
             console.log("Rotten Tomatoes " + (JSON.parse(body).Ratings[1].Value));
@@ -152,6 +171,9 @@ function movieThis (movie) {
             console.log("Language: " + (JSON.parse(body).Language));
             console.log("Plot: " + (JSON.parse(body).Plot));
             console.log("Actors: " + (JSON.parse(body).Actors));
+            console.log("");
+            console.log("**************************************");
+            console.log("");
         } else {
             console.log('An error occurred: ' + error);
         }
