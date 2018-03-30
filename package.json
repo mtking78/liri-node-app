@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/mtking78/liri-node-app#readme",
   "dependencies": {
+    "colors": "^1.2.1",
     "dotenv": "^5.0.1",
     "inquirer": "^5.2.0",
     "moment": "^2.21.0",

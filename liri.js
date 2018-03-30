@@ -2,6 +2,7 @@ require("dotenv").config();
 
 var request = require("request");
 var inquirer = require("inquirer");
+var colors = require('colors');
 var Twitter = require('twitter');
 var Spotify = require('node-spotify-api');
 
@@ -13,11 +14,12 @@ var keys = require("./keys.js");
     // Test to see if keys.js is exporting to liri.js by running "node .liri.js"
     // Expected to print "this is loaded"
     //*** The line below will print actual keys ***
-    //console.log(keys);
+    // console.log(keys);
 
 // You should then be able to access your keys information like so:
 var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
+var omdb = (keys.omdb);
 
 // Variables for different arguments
 //var command = process.argv[2];
@@ -117,7 +119,7 @@ function myTweets() {
         if (!error) {
 
             console.log("");
-            console.log("***** Twitter Tweeter: " + tweets[0].user.screen_name + " *****");
+            console.log(("***** Twitter Tweeter: " + tweets[0].user.screen_name + " *****").inverse);
             for (i = 0; i < tweets.length; i++) {
                 console.log("");
                 console.log(tweets[i].text);
@@ -141,8 +143,8 @@ function spotifyThisSong (song) {
 
             console.log("");
             console.log("Artist name: " + firstReturn.artists[0].name);
-            console.log("Song title: " + firstReturn.name);
-            console.log("Preview link at: " + firstReturn.external_urls.spotify);
+            console.log("Song title: " + (firstReturn.name).bold);
+            console.log("Preview link at: " + (firstReturn.external_urls.spotify).underline.red);
             console.log("Album title: " + firstReturn.album.name);
             console.log("");
             console.log("**************************************");
@@ -156,7 +158,7 @@ function spotifyThisSong (song) {
 // node liri.js movie-this '<movie name here>'
 function movieThis (movie) {
 
-    var omdbUrl = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=trilogy";
+    var omdbUrl = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=" + omdb.key;
 
     // Then run a request to the OMDB API with the movie specified
     request(omdbUrl, function(error, response, body) {
