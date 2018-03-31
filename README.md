@@ -1,7 +1,5 @@
 # LIRI bot
 
-## [Link to Current Page](https://mtking78.github.io/liri-node-app/)
-
 ### Search for tweets, songs, and movies.
 LIRI is like iPhone's SIRI. However, while SIRI is a Speech Interpretation and Recognition Interface, LIRI is a Language Interpretation and Recognition Interface. LIRI will be a command line node app that takes in parameters and gives you back data.
 
